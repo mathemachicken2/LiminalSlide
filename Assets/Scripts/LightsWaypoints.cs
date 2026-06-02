@@ -1,24 +1,111 @@
 using UnityEngine;
+using System.Collections;
 
 public class SlideLoop : MonoBehaviour
 {
-    public Transform pointA;
-    public Transform pointB;
+    [Header("Movement")]
+    public Transform movingObject;
     public float speed = 2f;
 
-    private float t = 0f;
+    [Header("Points")]
+    public Transform pointA;
+    public Transform pointB;
+    public Transform leftPoint;
+    public Transform rightPoint;
+
+    [Header("UI")]
+    public GameObject choicePanel;
+
+    private Transform currentEnd;
+    private float t;
+
+    private bool waitingForChoice = false;
+    private bool inBranch = false;
+
+    private float loopTimer;
+    private float nextChoiceTime;
+
+    void Start()
+    {
+        movingObject.position = pointA.position;
+        SetNextChoiceTime();
+        currentEnd = pointB; // normal loop A → B
+        choicePanel.SetActive(false);
+    }
 
     void Update()
     {
+        if (movingObject == null || currentEnd == null) return;
+        if (waitingForChoice) return;
+
         t += Time.deltaTime * speed;
+        loopTimer += Time.deltaTime;
 
-        // move from A to B
-        transform.position = Vector3.Lerp(pointA.position, pointB.position, t);
-
-        // reset when reaching end
-        if (t >= 1f)
+        if (t > 1f)
         {
-            t = 0f;
+            t -= 1f;
+
+            // Reached end of segment
+            if (!inBranch && currentEnd == pointB && loopTimer >= nextChoiceTime)
+            {
+                ShowChoices();
+                return;
+            }
         }
+
+        movingObject.position = Vector3.Lerp(
+            pointA.position,
+            currentEnd.position,
+            t
+        );
+    }
+
+    void SetNextChoiceTime()
+    {
+        nextChoiceTime = Random.Range(4f, 7f);
+        loopTimer = 0f;
+    }
+
+    public void ShowChoices()
+    {
+        waitingForChoice = true;
+        choicePanel.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    public void ChooseLeft()
+    {
+        StartBranch(leftPoint);
+    }
+
+    public void ChooseRight()
+    {
+        StartBranch(rightPoint);
+    }
+
+    void StartBranch(Transform branchPoint)
+    {
+        Time.timeScale = 1f;
+        choicePanel.SetActive(false);
+
+        currentEnd = branchPoint;
+        t = 0f;
+
+        waitingForChoice = false;
+        inBranch = true;
+
+        StartCoroutine(ReturnToMainLoopAfterDelay());
+    }
+
+    IEnumerator ReturnToMainLoopAfterDelay()
+    {
+        yield return new WaitForSeconds(3f);
+
+        // Return to main loop
+        currentEnd = pointB;
+        t = 0f;
+        inBranch = false;
+
+        SetNextChoiceTime();
     }
 }
