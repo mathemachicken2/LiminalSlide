@@ -25,6 +25,9 @@ public class SlideLoop : MonoBehaviour
     private float loopTimer;
     private float nextChoiceTime;
 
+    [Header("Death")]
+    public DeathSequence deathSequence;
+
     void Start()
     {
         movingObject.position = pointA.position;
@@ -85,6 +88,12 @@ public class SlideLoop : MonoBehaviour
 
     void StartBranch(Transform branchPoint)
     {
+
+        if (deathSequence != null)
+        {
+            deathSequence.CheckForDeath();
+        }
+
         Time.timeScale = 1f;
         choicePanel.SetActive(false);
 
@@ -101,11 +110,14 @@ public class SlideLoop : MonoBehaviour
     {
         yield return new WaitForSeconds(3f);
 
+        if (deathSequence != null && deathSequence.isDead)
+            yield break;
+
         // Return to main loop
         currentEnd = pointB;
         t = 0f;
         inBranch = false;
 
-        SetNextChoiceTime();
+        SetNextChoiceTime(); 
     }
 }
