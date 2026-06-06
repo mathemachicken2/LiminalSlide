@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
@@ -28,6 +29,14 @@ public class DeathSequence : MonoBehaviour
     public Transform secondVfxSpawnPoint;
     public Transform thirdVfxSpawnPoint;
 
+    public GameObject winOverlay;
+    public float winFadeDuration = 4f;
+    public string winSceneName = "AfterLife";
+
+    private bool hasWon = false;
+
+    public SlideWinMovement slideWinMovement;
+
 
     void Start()
     {
@@ -46,6 +55,19 @@ public class DeathSequence : MonoBehaviour
 
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
+
+        if (winOverlay != null)
+        {
+            winOverlay.SetActive(true);
+
+            Image img = winOverlay.GetComponent<Image>();
+            if (img != null)
+            {
+                Color c = img.color;
+                c.a = 0f;
+                img.color = c;
+            }
+        }
     }
     IEnumerator FadeBloodOverlay(float duration)
     {
@@ -128,6 +150,12 @@ public class DeathSequence : MonoBehaviour
 
         buttonPressCount++;
 
+        if (!hasWon && buttonPressCount >= 4)
+        {
+            WinGame();
+            return false;
+        }
+
         // Only start rolling after 3 presses
         if (buttonPressCount <= pressesBeforeDeathCanHappen)
             return false;
@@ -139,6 +167,47 @@ public class DeathSequence : MonoBehaviour
         }
 
         return false;
+    }
+
+    void WinGame()
+    {
+        hasWon = true;
+
+        StartCoroutine(WinRoutine());
+    }
+
+    IEnumerator WinRoutine()
+    {
+        slideWinMovement.StartWinMovement();
+        yield return new WaitForSeconds(2.5f);
+        if (winOverlay != null)
+        {
+           
+
+            Image img = winOverlay.GetComponent<Image>();
+
+            float t = 0f;
+            Color c = img.color;
+
+            while (t < winFadeDuration)
+            {
+                t += Time.deltaTime;
+
+                c.a = Mathf.Lerp(0f, 1f, t / winFadeDuration);
+                img.color = c;
+
+                yield return null;
+            }
+
+            c.a = 1f;
+            img.color = c;
+        }
+
+        yield return new WaitForSeconds(2f);
+
+        Debug.Log("Player won!");
+
+        SceneManager.LoadScene(winSceneName);
     }
 
     void Die()
