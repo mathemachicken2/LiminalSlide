@@ -304,7 +304,11 @@ public class DialogueSystem : MonoBehaviour
             return; // SUB-CHOICE MODE: do NOT advance dialogue
         }
     }
-
+    IEnumerator ReturnToMainMenu(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SceneManager.LoadScene("MainMenu");
+    }
     IEnumerator ShakeTextDelay()
     {
         yield return new WaitForSeconds(5f);
@@ -345,6 +349,7 @@ public class DialogueSystem : MonoBehaviour
         cameraBob.SetYesView();
         hardCodedFiona.gameObject.SetActive(true);
         ShowDialogueText("I'll cook some mud soup for you when we get back home.");
+        StartCoroutine(ReturnToMainMenu(10f));
     }
 
     void NoAction()
@@ -354,6 +359,7 @@ public class DialogueSystem : MonoBehaviour
         cameraBob.SetYesView();
         StartCoroutine(FadeInBlood(3f));
         ShowDialogueText("YOU ARE COMING WITH ME!!!!!! I've collected far too much hay for you to not share it with me.");
+        StartCoroutine(ReturnToMainMenu(6f));
     }
     void NoActionBranch()
     {
@@ -409,7 +415,7 @@ public class DialogueSystem : MonoBehaviour
         for (int i = 0; i < 3; i++)
         {
             Instantiate(bloodParticlePrefab, particleSpawnPoint.position, Quaternion.identity);
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1f);
         }
 
         bloodOverlay.gameObject.SetActive(true);
