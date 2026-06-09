@@ -13,6 +13,7 @@ public class DialogueSystem : MonoBehaviour
     {
         public string choiceText;
         public int nextLineIndex;
+        
 
         public ChoiceAction action;
     }
@@ -31,6 +32,7 @@ public class DialogueSystem : MonoBehaviour
 
     public TMP_Text dialogueText;
     public TMP_Text speakerText;
+    public TMP_Text toBeContinuedText;
 
     public DialogueLine[] dialogue;
 
@@ -41,13 +43,21 @@ public class DialogueSystem : MonoBehaviour
     private Coroutine typingCoroutine;
 
     public GameObject choicePanel;
+   
     public Button[] choiceButtons;
     public TMP_Text[] choiceButtonTexts;
+    public TMP_Text choiceDialogueText;
+
+    public TMP_Text hardCodedYou;
+    public TMP_Text hardCodedFiona;
 
     public CameraBob cameraBob;
 
     private DialogueChoice[] noSubChoices;
     private bool waitingForSubChoice = false;
+
+    public GameObject bloodParticlePrefab;
+    public Transform particleSpawnPoint;
 
 
 
@@ -65,6 +75,10 @@ public class DialogueSystem : MonoBehaviour
         choicePanel.SetActive(false);
         dialoguePanel.SetActive(false);
         bloodOverlay.gameObject.SetActive(false);
+        choiceDialogueText.gameObject.SetActive(false);
+        hardCodedFiona.gameObject.SetActive(false);
+        hardCodedYou.gameObject.SetActive(true);
+        toBeContinuedText.gameObject.SetActive(false);
 
         FadeOutAndStartDialogue(1.5f);
     }
@@ -75,16 +89,20 @@ public class DialogueSystem : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
+            
             if (isTyping)
             {
                 StopCoroutine(typingCoroutine);
-                dialogueText.text = dialogue[index].line;
+
+                dialogueText.text = dialogue[index - 1].line;
+                
+
                 isTyping = false;
+                return;
             }
-            else
-            {
-                ShowNextLine();
-            }
+
+           
+            ShowNextLine();
         }
     }
 
@@ -160,6 +178,7 @@ public class DialogueSystem : MonoBehaviour
     void ShowChoices(DialogueChoice[] choices)
     {
         choicePanel.SetActive(true);
+        
 
         for (int i = 0; i < choiceButtons.Length; i++)
         {
@@ -183,10 +202,33 @@ public class DialogueSystem : MonoBehaviour
         }
     }
 
+    IEnumerator FadeToBlackAndLoadScene(string sceneName, float duration)
+    {
+        fadeOverlay.gameObject.SetActive(true);
+
+        Color c = fadeOverlay.color;
+        float t = 0f;
+
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            c.a = t / duration;
+            fadeOverlay.color = c;
+            yield return null;
+        }
+
+        c.a = 1f;
+        fadeOverlay.color = c;
+
+        yield return new WaitForSeconds(0.2f);
+
+        SceneManager.LoadScene(sceneName);
+    }
     IEnumerator FadeAndExecute(System.Action action, float duration)
     {
         fadeOverlay.gameObject.SetActive(true);
         action?.Invoke();
+
         yield return new WaitForSeconds(6f);
         
 
@@ -222,25 +264,33 @@ public class DialogueSystem : MonoBehaviour
         Debug.Log($"Action value: {choice.action}");
 
         choicePanel.SetActive(false);
+        
+
 
         switch (choice.action)
         {
             case ChoiceAction.Yes:
                 StartCoroutine(FadeAndExecute(YesAction, 2f));
+                StartCoroutine(ShakeTextDelay());
                 break;
 
             case ChoiceAction.NoBranch:
-                StartCoroutine(FadeAndExecute(NoActionBranch, 2f));
+                choiceDialogueText.gameObject.SetActive(true);
+                hardCodedFiona.gameObject.SetActive(true);
+
+                choiceDialogueText.text = "Come along, NOW!!!!!!!!!!!";
+                StartCoroutine(ShakeText(choiceDialogueText.rectTransform, 6f, 2f));
+                NoActionBranch();
                 break;
 
             case ChoiceAction.No:
                 Debug.Log("Final NO outcome");
                 StartCoroutine(FadeAndExecute(NoAction, 2f));
-                ShowDialogueText("Final NO response...");
+                ShowDialogueText("FINE, I'll eat you instead!!!!");
                 break;
 
             case ChoiceAction.GoBackInSlide:
-                StartCoroutine(FadeAndExecute(LoadSceneAction, 2f));
+                StartCoroutine(FadeToBlackAndLoadScene("SampleScene", 2f));
                 break;
 
             default:
@@ -249,26 +299,52 @@ public class DialogueSystem : MonoBehaviour
         }
 
         // ONLY continue dialogue if NOT in sub-choice mode
-        if (!waitingForSubChoice)
+        if (waitingForSubChoice)
         {
-            index = choice.nextLineIndex;
-            ShowNextLine();
+            return; // SUB-CHOICE MODE: do NOT advance dialogue
         }
     }
 
+    IEnumerator ShakeTextDelay()
+    {
+        yield return new WaitForSeconds(5f);
+        toBeContinuedText.gameObject.SetActive(true);
+        StartCoroutine(ShakeText(toBeContinuedText.rectTransform, 6f, 2f));
+    }
+    IEnumerator ShakeText(RectTransform rect, float duration, float magnitude)
+    {
+        Vector3 originalPos = rect.anchoredPosition;
+
+        float t = 0f;
+
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+
+            float x = Random.Range(-1f, 1f) * magnitude;
+            float y = Random.Range(-1f, 1f) * magnitude;
+
+            rect.anchoredPosition = originalPos + new Vector3(x, y, 0f);
+
+            yield return null;
+        }
+
+        rect.anchoredPosition = originalPos;
+    }
     void LoadSceneAction()
     {
         Debug.Log("GO BACK TO SCENE");
 
-       // SceneManager.LoadScene("SampleScene");
+        SceneManager.LoadScene("SampleScene");
     }
     void YesAction()
     {
+        waitingForSubChoice = false;
         Debug.Log("YES ACTION");
 
         cameraBob.SetYesView();
-
-        ShowDialogueText("This is the YES path dialogue...");
+        hardCodedFiona.gameObject.SetActive(true);
+        ShowDialogueText("I'll cook some mud soup for you when we get back home.");
     }
 
     void NoAction()
@@ -276,8 +352,8 @@ public class DialogueSystem : MonoBehaviour
         Debug.Log("NO ACTION");
 
         cameraBob.SetYesView();
-        StartCoroutine(FadeInBlood(1f));
-        ShowDialogueText("This is the NO path dialogue...");
+        StartCoroutine(FadeInBlood(3f));
+        ShowDialogueText("YOU ARE COMING WITH ME!!!!!! I've collected far too much hay for you to not share it with me.");
     }
     void NoActionBranch()
     {
@@ -309,8 +385,9 @@ public class DialogueSystem : MonoBehaviour
 
         waitingForSubChoice = true;
         ShowChoices(noSubChoices);
-
-        ShowDialogueText("This is the NO path dialogue...");
+        hardCodedYou.gameObject.SetActive(false);
+        hardCodedFiona.gameObject.SetActive(true);
+        ShowDialogueText("NO NO NO NO NO");
     }
 
     void ShowDialogueText(string text)
@@ -327,6 +404,14 @@ public class DialogueSystem : MonoBehaviour
     }
     IEnumerator FadeInBlood(float duration)
     {
+       
+
+        for (int i = 0; i < 3; i++)
+        {
+            Instantiate(bloodParticlePrefab, particleSpawnPoint.position, Quaternion.identity);
+            yield return new WaitForSeconds(2f);
+        }
+
         bloodOverlay.gameObject.SetActive(true);
 
         Color c = bloodOverlay.color;
