@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -37,9 +38,14 @@ public class DeathSequence : MonoBehaviour
 
     public SlideWinMovement slideWinMovement;
 
+    private static int winCount = 0;
+    public TMP_Text toBeContinuedText;
+
 
     void Start()
     {
+        toBeContinuedText.gameObject.SetActive(false);
+
         if (bloodOverlay != null)
         {
             bloodOverlayImage = bloodOverlay.GetComponent<Image>();
@@ -108,6 +114,17 @@ public class DeathSequence : MonoBehaviour
             gameOverPanel.SetActive(true);
     }
 
+    public void RestartCurrentScene()
+    {
+        Time.timeScale = 1f; // in case you pause later
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void LoadMainMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu"); // make sure scene name exists in Build Settings
+    }
     void SpawnBloodVFX()
     {
         StartCoroutine(BloodBurstRoutine());
@@ -145,18 +162,11 @@ public class DeathSequence : MonoBehaviour
 
     public bool CheckForDeath()
     {
-        if (isDead)
+        if (isDead || hasWon)
             return true;
 
         buttonPressCount++;
 
-        if (!hasWon && buttonPressCount >= 4)
-        {
-            WinGame();
-            return false;
-        }
-
-        // Only start rolling after 3 presses
         if (buttonPressCount <= pressesBeforeDeathCanHappen)
             return false;
 
@@ -166,12 +176,19 @@ public class DeathSequence : MonoBehaviour
             return true;
         }
 
+        if (buttonPressCount >= 4)
+        {
+            WinGame();
+            return false;
+        }
+
         return false;
     }
 
     void WinGame()
     {
         hasWon = true;
+        winCount++;
 
         StartCoroutine(WinRoutine());
     }
@@ -203,20 +220,59 @@ public class DeathSequence : MonoBehaviour
             img.color = c;
         }
 
-        yield return new WaitForSeconds(2f);
+        //yield return new WaitForSeconds(2f);
 
-        Debug.Log("Player won!");
+        if (winCount >= 2)
+        {
+            Debug.Log("Second win → showing text first");
 
-        SceneManager.LoadScene(winSceneName);
+            toBeContinuedText.gameObject.SetActive(true);
+            StartCoroutine(ShakeText(toBeContinuedText.rectTransform, 6f, 2f));
+
+            yield return new WaitForSeconds(3f); // wait for shake to finish
+
+            Debug.Log("Loading Main Menu");
+            SceneManager.LoadScene("MainMenu");
+        }
+        else
+        {
+            Debug.Log("First win → AfterLife");
+            SceneManager.LoadScene(winSceneName);
+        }
     }
+    IEnumerator ShakeTextDelay()
+    {
+        yield return new WaitForSeconds(2f);
+        toBeContinuedText.gameObject.SetActive(true);
+        StartCoroutine(ShakeText(toBeContinuedText.rectTransform, 6f, 2f));
+    }
+    IEnumerator ShakeText(RectTransform rect, float duration, float magnitude)
+    {
+        Vector3 originalPos = rect.anchoredPosition;
 
+        float t = 0f;
+
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+
+            float x = Random.Range(-1f, 1f) * magnitude;
+            float y = Random.Range(-1f, 1f) * magnitude;
+
+            rect.anchoredPosition = originalPos + new Vector3(x, y, 0f);
+
+            yield return null;
+        }
+
+        rect.anchoredPosition = originalPos;
+    }
+   
     void Die()
     {
         isDead = true;
 
-      
-
         StartCoroutine(ShowGameOverAfterDelay());
+        
 
         SpawnKnifeRing();
 

@@ -1,5 +1,6 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class SlideLoop : MonoBehaviour
 {
@@ -65,7 +66,7 @@ public class SlideLoop : MonoBehaviour
 
     void SetNextChoiceTime()
     {
-        nextChoiceTime = Random.Range(4f, 7f);
+        nextChoiceTime = Random.Range(3f, 4f);
         loopTimer = 0f;
     }
 
@@ -79,11 +80,19 @@ public class SlideLoop : MonoBehaviour
     public void ChooseLeft()
     {
         StartBranch(leftPoint);
+        StartCoroutine(ClearSelectionNextFrame());
     }
 
     public void ChooseRight()
     {
         StartBranch(rightPoint);
+        StartCoroutine(ClearSelectionNextFrame());
+    }
+
+    IEnumerator ClearSelectionNextFrame()
+    {
+        yield return null;
+        EventSystem.current.SetSelectedGameObject(null);
     }
 
     void StartBranch(Transform branchPoint)
