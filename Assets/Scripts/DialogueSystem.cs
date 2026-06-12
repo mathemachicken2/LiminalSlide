@@ -59,6 +59,11 @@ public class DialogueSystem : MonoBehaviour
     public GameObject bloodParticlePrefab;
     public Transform particleSpawnPoint;
 
+    [Header("Food Image Event")]
+    public GameObject foodImagePrefab;
+    public Transform imageParent; // Canvas or UI panel
+    private bool waitingForFoodClick = false;
+
 
 
     public enum ChoiceAction
@@ -79,13 +84,15 @@ public class DialogueSystem : MonoBehaviour
         hardCodedFiona.gameObject.SetActive(false);
         hardCodedYou.gameObject.SetActive(true);
         toBeContinuedText.gameObject.SetActive(false);
+        
 
         FadeOutAndStartDialogue(1.5f);
     }
 
     void Update()
     {
-        if (!dialoguePanel.activeSelf) return;
+        if (!dialoguePanel.activeSelf || waitingForFoodClick)
+            return;
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -160,6 +167,13 @@ public class DialogueSystem : MonoBehaviour
 
         index++;
 
+        if (current.line.Replace("\r", "").Replace("\n", "").Trim() ==
+    "Relax, I brought you some. Eat up so we can go home.")
+        {
+            Debug.Log("Triggering MUD IMAGE");
+            StartCoroutine(ShowFoodAfterTyping());
+        }
+
         // If this line has choices, we stop here AFTER typing
         if (current.hasChoices)
         {
@@ -167,6 +181,45 @@ public class DialogueSystem : MonoBehaviour
         }
     }
 
+    IEnumerator ShowFoodAfterTyping()
+    {
+        Debug.Log("ShowFoodAfterTyping STARTED");
+
+        while (isTyping)
+            yield return null;
+
+        waitingForFoodClick = true;
+
+        GameObject imageObj = Instantiate(foodImagePrefab, imageParent);
+        Debug.Log("Prefab spawned");
+        dialoguePanel.SetActive(false);
+
+        Button imageButton = imageObj.GetComponentInChildren<Button>();
+
+        if (imageButton == null)
+        {
+            Debug.LogError("No Button found on foodImagePrefab!");
+            yield break;
+        }
+
+        imageButton.onClick.AddListener(() =>
+        {
+            StartCoroutine(FoodClicked(imageObj));
+        });
+    }
+
+    IEnumerator FoodClicked(GameObject imageObj)
+    {
+        Destroy(imageObj);
+
+        yield return new WaitForSeconds(3f);
+
+        waitingForFoodClick = false;
+
+        dialoguePanel.SetActive(true);
+
+        ShowNextLine();
+    }
     IEnumerator WaitThenShowChoices(DialogueLine line)
     {
         while (isTyping)
