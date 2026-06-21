@@ -29,6 +29,8 @@ public class SlideLoop : MonoBehaviour
     [Header("Death")]
     public DeathSequence deathSequence;
 
+    public AudioClip choiceSelectedSound;
+
     void Start()
     {
         movingObject.position = pointA.position;
@@ -97,6 +99,7 @@ public class SlideLoop : MonoBehaviour
 
     void StartBranch(Transform branchPoint)
     {
+        GameAudio.Instance.Play(choiceSelectedSound);
 
         if (deathSequence != null)
         {

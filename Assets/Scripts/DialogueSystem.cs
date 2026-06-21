@@ -64,6 +64,10 @@ public class DialogueSystem : MonoBehaviour
     public Transform imageParent; // Canvas or UI panel
     private bool waitingForFoodClick = false;
 
+    
+    public AudioClip eatingSound;
+    public AudioClip NoActionChosen;
+    public AudioClip YesActionChosen;
 
 
     public enum ChoiceAction
@@ -210,6 +214,7 @@ public class DialogueSystem : MonoBehaviour
 
     IEnumerator FoodClicked(GameObject imageObj)
     {
+        GameAudio.Instance.Play(eatingSound);
         Destroy(imageObj);
 
         yield return new WaitForSeconds(3f);
@@ -339,7 +344,7 @@ public class DialogueSystem : MonoBehaviour
             case ChoiceAction.No:
                 Debug.Log("Final NO outcome");
                 StartCoroutine(FadeAndExecute(NoAction, 2f));
-                ShowDialogueText("FINE, I'll eat you instead!!!!");
+                ShowDialogueText("Fine, I'll eat you instead.");
                 break;
 
             case ChoiceAction.GoBackInSlide:
@@ -396,6 +401,7 @@ public class DialogueSystem : MonoBehaviour
     }
     void YesAction()
     {
+        GameAudio.Instance.Play(YesActionChosen);
         waitingForSubChoice = false;
         Debug.Log("YES ACTION");
 
@@ -416,6 +422,8 @@ public class DialogueSystem : MonoBehaviour
     }
     void NoActionBranch()
     {
+        GameAudio.Instance.Play(NoActionChosen);
+
         Debug.Log("NO ACTION");
 
         cameraBob.SetNoView();
@@ -436,7 +444,7 @@ public class DialogueSystem : MonoBehaviour
         },
         new DialogueChoice
         {
-            choiceText = "Hell no",
+            choiceText = "HELP!!!!!!! NNOOOOO",
             action = ChoiceAction.No
         }
         };
@@ -463,7 +471,7 @@ public class DialogueSystem : MonoBehaviour
     }
     IEnumerator FadeInBlood(float duration)
     {
-       
+        GameAudio.Instance.Play(eatingSound);
 
         for (int i = 0; i < 3; i++)
         {
@@ -494,6 +502,8 @@ public class DialogueSystem : MonoBehaviour
     }
     IEnumerator TypeLine(string line)
     {
+        
+
         isTyping = true;
         dialogueText.text = "";
 

@@ -41,10 +41,23 @@ public class DeathSequence : MonoBehaviour
     private static int winCount = 0;
     public TMP_Text toBeContinuedText;
 
+    //public AudioClip deathSound;
+    public AudioClip knifeSound;
+    public AudioClip bloodSound;
+    public AudioClip winSound;
+
+    private static bool hasBeenToAfterlife = false;
+    private static bool endingTriggered = false;
+    
+
 
     void Start()
     {
         toBeContinuedText.gameObject.SetActive(false);
+        
+        endingTriggered = false;
+        winCount= 0;
+
 
         if (bloodOverlay != null)
         {
@@ -74,6 +87,13 @@ public class DeathSequence : MonoBehaviour
                 img.color = c;
             }
         }
+    }
+
+    public static void ResetProgress()
+    {
+        hasBeenToAfterlife = false;
+        endingTriggered = false;
+        winCount = 0;
     }
     IEnumerator FadeBloodOverlay(float duration)
     {
@@ -112,6 +132,7 @@ public class DeathSequence : MonoBehaviour
 
         if (gameOverPanel != null)
             gameOverPanel.SetActive(true);
+       
     }
 
     public void RestartCurrentScene()
@@ -132,7 +153,8 @@ public class DeathSequence : MonoBehaviour
 
     IEnumerator BloodBurstRoutine()
     {
-        // First burst
+        GameAudio.Instance.Play(bloodSound);
+        
         Instantiate(
             bloodParticlePrefab,
             vfxSpawnPoint.position,
@@ -187,9 +209,15 @@ public class DeathSequence : MonoBehaviour
 
     void WinGame()
     {
+        if (isDead || hasWon)
+            return;
+
         hasWon = true;
         winCount++;
 
+      
+
+        GameAudio.Instance.Play(winSound);
         StartCoroutine(WinRoutine());
     }
 
@@ -221,25 +249,34 @@ public class DeathSequence : MonoBehaviour
         }
 
         //yield return new WaitForSeconds(2f);
+        if (endingTriggered)
+            yield break;
 
-        if (winCount >= 2)
+        if (!hasBeenToAfterlife)
         {
-            Debug.Log("Second win → showing text first");
+            Debug.Log("First win → AfterLife");
 
-            toBeContinuedText.gameObject.SetActive(true);
-            StartCoroutine(ShakeText(toBeContinuedText.rectTransform, 6f, 2f));
+            hasBeenToAfterlife = true;
 
-            yield return new WaitForSeconds(3f); // wait for shake to finish
+            yield return new WaitForSeconds(0.5f);
 
-            Debug.Log("Loading Main Menu");
-            SceneManager.LoadScene("MainMenu");
+            SceneManager.LoadScene(winSceneName);
         }
         else
         {
-            Debug.Log("First win → AfterLife");
-            SceneManager.LoadScene(winSceneName);
+            endingTriggered = true;
+
+            Debug.Log("Second progression win → Main Menu ending");
+
+            toBeContinuedText.gameObject.SetActive(true);
+
+            StartCoroutine(ShakeText(toBeContinuedText.rectTransform, 6f, 2f));
+
+            yield return new WaitForSeconds(1f);
+
+            SceneManager.LoadScene("MainMenu");
         }
-    }
+        }
     IEnumerator ShakeTextDelay()
     {
         yield return new WaitForSeconds(2f);
@@ -270,22 +307,19 @@ public class DeathSequence : MonoBehaviour
     void Die()
     {
         isDead = true;
-
+        Debug.Log($"Player died. Win count = {winCount}");
         StartCoroutine(ShowGameOverAfterDelay());
-        
 
         SpawnKnifeRing();
 
         Debug.Log("Player died!");
 
-        // Optional:
-        // Time.timeScale = 0f;
-        // Show death screen
-        // Play sound
-        // Disable controls
+       
+
     }
     void SpawnKnifeRing()
     {
+        GameAudio.Instance.Play(knifeSound);
         GameObject knifeRing = Instantiate(
             knifeRingPrefab,
             knifeSpawnPoint.position,

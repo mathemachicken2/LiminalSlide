@@ -328,8 +328,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e12abab0594fd349a0ee5f6ccea4851, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DeathSequence
-  deathChance: 1
-  pressesBeforeDeathCanHappen: 3
+  deathChance: 0
+  pressesBeforeDeathCanHappen: 1
   bloodOverlay: {fileID: 290377301}
   gameOverPanel: {fileID: 1308050869}
   isDead: 0
@@ -345,6 +345,9 @@ MonoBehaviour:
   winSceneName: AfterLife
   slideWinMovement: {fileID: 2034783182}
   toBeContinuedText: {fileID: 1502479114}
+  knifeSound: {fileID: 8300000, guid: ed81cbbb8393bf64f8a14804c9cbf485, type: 3}
+  bloodSound: {fileID: 8300000, guid: 640133fb61141df48a3f6fb570c14bca, type: 3}
+  winSound: {fileID: 8300000, guid: 8e7481eb31e3c4047b8a9875be4c29b8, type: 3}
 --- !u!114 &168375332
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -365,6 +368,7 @@ MonoBehaviour:
   rightPoint: {fileID: 958452983}
   choicePanel: {fileID: 959690591}
   deathSequence: {fileID: 168375331}
+  choiceSelectedSound: {fileID: 8300000, guid: 8e7481eb31e3c4047b8a9875be4c29b8, type: 3}
 --- !u!1 &290377301
 GameObject:
   m_ObjectHideFlags: 0
@@ -2154,7 +2158,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1250462080}
-  - component: {fileID: 1250462079}
+  - component: {fileID: 1250462081}
+  - component: {fileID: 1250462082}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -2162,7 +2167,35 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!82 &1250462079
+--- !u!4 &1250462080
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1250462078}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 569.5, y: 372, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1250462081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1250462078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae824b7d3aaa9244aa5ff3c2a9083ce1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameAudio
+  sfxSource: {fileID: 1250462082}
+--- !u!82 &1250462082
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2173,9 +2206,9 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 5e6a9b6dd5df2a04c92f4df248c4373f, type: 3}
+  m_Resource: {fileID: 8300000, guid: 2997ddd709c97cc42a146c28c385a955, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.11
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -2259,21 +2292,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!4 &1250462080
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1250462078}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 569.5, y: 372, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1298710345
 GameObject:
   m_ObjectHideFlags: 0
@@ -3148,7 +3166,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1536350599
 RectTransform:
   m_ObjectHideFlags: 0
