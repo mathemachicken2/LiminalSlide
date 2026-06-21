@@ -820,6 +820,7 @@ GameObject:
   m_Component:
   - component: {fileID: 708542348}
   - component: {fileID: 708542347}
+  - component: {fileID: 708542349}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -840,7 +841,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: e79dd418eee58954ea41c865dd569925, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.17
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -939,6 +940,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &708542349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 708542346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae824b7d3aaa9244aa5ff3c2a9083ce1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameAudio
+  sfxSource: {fileID: 708542347}
 --- !u!1 &719359425
 GameObject:
   m_ObjectHideFlags: 0
@@ -964,11 +978,11 @@ Transform:
   m_GameObject: {fileID: 719359425}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.01, z: -7.93}
+  m_LocalPosition: {x: 0, y: 7.95, z: 2.15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1887168729}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &772111671
 GameObject:
@@ -2642,7 +2656,7 @@ MonoBehaviour:
     hasChoices: 0
     choices: []
   - speaker: Fiona
-    line: Good boy. Now let's go home.
+    line: Well done. Now let's go home.
     hasChoices: 0
     choices: []
   - speaker: You
@@ -2676,6 +2690,9 @@ MonoBehaviour:
   particleSpawnPoint: {fileID: 719359426}
   foodImagePrefab: {fileID: 8656778911758276050, guid: 663d2a3a5860dd54397660b8b0adb3e1, type: 3}
   imageParent: {fileID: 1100557851}
+  eatingSound: {fileID: 8300000, guid: e5f6c46e077f8f240bb877aa36afdd45, type: 3}
+  NoActionChosen: {fileID: 8300000, guid: 640133fb61141df48a3f6fb570c14bca, type: 3}
+  YesActionChosen: {fileID: 8300000, guid: 2997ddd709c97cc42a146c28c385a955, type: 3}
 --- !u!1 &1887168726
 GameObject:
   m_ObjectHideFlags: 0
@@ -2767,7 +2784,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 719359426}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1887168730
@@ -3211,6 +3229,5 @@ SceneRoots:
   - {fileID: 963746921}
   - {fileID: 2021557680}
   - {fileID: 1776304400}
-  - {fileID: 719359426}
   - {fileID: 308078898}
   - {fileID: 708542348}
