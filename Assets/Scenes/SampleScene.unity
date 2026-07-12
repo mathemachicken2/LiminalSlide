@@ -328,8 +328,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e12abab0594fd349a0ee5f6ccea4851, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DeathSequence
-  deathChance: 0
-  pressesBeforeDeathCanHappen: 1
+  deathChance: 0.477
+  pressesBeforeDeathCanHappen: 3
   bloodOverlay: {fileID: 290377301}
   gameOverPanel: {fileID: 1308050869}
   isDead: 0
@@ -396,7 +396,7 @@ RectTransform:
   m_GameObject: {fileID: 290377301}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 13.145059, y: 7.421303, z: 1}
+  m_LocalScale: {x: 35.383667, y: 26.164371, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1904125831}
@@ -1055,7 +1055,7 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 0, g: 0, b: 0, a: 0.5176471}
-    m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0.38431373}
+    m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0.7882353}
     m_PressedColor: {r: 0, g: 0, b: 0, a: 0.38431373}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
@@ -1268,7 +1268,7 @@ RectTransform:
   m_GameObject: {fileID: 772006850}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 13.145059, y: 7.421303, z: 1}
+  m_LocalScale: {x: 41.27811, y: 14.227379, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1904125831}
@@ -1426,7 +1426,7 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 0, g: 0, b: 0, a: 0.5176471}
-    m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0.38431373}
+    m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0.7882353}
     m_PressedColor: {r: 0, g: 0, b: 0, a: 0.38431373}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
@@ -1804,7 +1804,7 @@ RectTransform:
   m_GameObject: {fileID: 959690591}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 9.516837, y: 2.4981, z: 1}
+  m_LocalScale: {x: 6.0485444, y: 2.0067198, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 833209557}
@@ -1829,7 +1829,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.34901962}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.2627451}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2208,13 +2208,13 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 2997ddd709c97cc42a146c28c385a955, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.11
+  m_Volume: 0.555
   m_Pitch: 1
   Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 123
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500
